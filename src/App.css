@@ -95,6 +95,13 @@ main > *{
   margin: auto;
 }
 
+label{
+  display: inline-block;
+  margin-bottom: 1em;
+  margin-right: 1em;
+  text-align: left;
+}
+
 @media (min-width: 400px){
   html{
     font-size: 110%;

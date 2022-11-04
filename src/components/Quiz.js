@@ -8,9 +8,11 @@ export default function QuestionBox(props){
     const [questionBoxes, setQuestionBoxes] = useState([])
     const [checked, setChecked] = useState(false)
     const [score, setScore] = useState(0)
+
+    //const url = 
    
     useEffect( () => {
-        fetch("https://opentdb.com/api.php?amount=5&type=multiple&encode=url3986")
+        fetch(`https://opentdb.com/api.php?amount=5&category=${props.category}&difficulty=${props.difficulty}&type=multiple&encode=url3986`)
             .then(response => response.json())
             .then(data => {
                 //setQuestionBoxes(data.results)
@@ -38,7 +40,7 @@ export default function QuestionBox(props){
                 }
                 setQuestionBoxes(newQuestions)
             })
-    },[])
+    },[props.category, props.difficulty])
    
 
         function selectOption(optId, questId){
