@@ -110,7 +110,7 @@ export default function QuestionBox(props){
       
         return (
             <main>
-                <div>
+                <div className="quiz-page">
                     {questionElements}
                 </div>
                 <div>

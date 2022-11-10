@@ -17,9 +17,15 @@ main{
   display: grid;
   place-content: center;
   margin: 0 auto;
+  padding: 0 1em;
 }
-main > *{
-  padding: 1em;
+
+.quiz-page{
+  padding: 2em 0;
+}
+button,
+select{
+  cursor: pointer;
 }
 .start-page{
   position: relative;
@@ -97,9 +103,16 @@ main > *{
 
 label{
   display: inline-block;
-  margin-bottom: 1em;
-  margin-right: 1em;
+  margin-block: 1em;
   text-align: left;
+}
+select{
+  display: block;
+  margin: auto;
+  border-radius: 5px;
+  padding: 0.5em;
+  font-family: inherit;
+  outline: none;
 }
 
 @media (min-width: 400px){
@@ -122,4 +135,5 @@ label{
   .result{
     margin-left: auto;
   }
+  
 }
