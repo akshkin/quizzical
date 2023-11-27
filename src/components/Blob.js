@@ -17,7 +17,7 @@ export default function Blob() {
         />
       </svg>
       <svg
-        className=" blue"
+        className="svg blue"
         width="148"
         height="118"
         viewBox="0 0 148 118"

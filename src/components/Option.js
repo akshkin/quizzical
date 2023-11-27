@@ -1,41 +1,53 @@
-export default function Option(props) {
+export default function Option({ setChosen, id, option, checked }) {
   let styles = {};
 
-  if (props.option.isChosen && !props.checked) {
-    //selected style
-    styles = {
-      backgroundColor: "#D6DBF5",
-      border: "none",
-    };
-  } else if (
-    props.option.isCorrect ||
-    props.option.isChosen === props.correct
-  ) {
-    styles = {
-      backgroundColor: "#94D7A2",
-      border: "none",
-    };
-  } else if (props.option.isWrong) {
-    styles = {
-      backgroundColor: "#F8BCBC",
-      border: "none",
-      opacity: "0.5",
-    };
-  } else if (props.checked) {
-    styles = {
-      backgroundColor: "#FFFFFF",
-      border: "1px solid #4D5B9E",
-      opacity: "0.5",
-    };
+  const { isChosen, isCorrect } = option;
+
+  switch (true) {
+    case isChosen && !checked:
+      styles = {
+        backgroundColor: "#D6DBF5",
+        border: "none",
+      };
+      break;
+    case isChosen && checked && isCorrect:
+      styles = {
+        backgroundColor: "#94D7A2",
+        border: "none",
+      };
+      break;
+    case isChosen && checked && !isCorrect:
+      styles = {
+        backgroundColor: "#F8BCBC",
+        border: "none",
+        opacity: "0.5",
+      };
+      break;
+    case checked && isCorrect:
+      styles = {
+        backgroundColor: "#94D7A2",
+        border: "none",
+        opacity: "0.5",
+      };
+      break;
+    case checked:
+      styles = {
+        backgroundColor: "#FFFFFF",
+        border: "1px solid #4D5B9E",
+        opacity: "0.5",
+      };
+      break;
+    case checked && isCorrect:
+      styles = {
+        backgroundColor: "#94D7A2",
+        border: "none",
+      };
+      break;
   }
 
   return (
-    <span
-      className="answer"
-      style={styles}
-      onClick={() => props.selectOption(props.option.id, props.questId)}
-    >
-      {props.option.value}
+    <span className="answer" style={styles} onClick={() => setChosen(id)}>
+      {option.option}
     </span>
   );
 }

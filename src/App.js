@@ -15,15 +15,14 @@ function App() {
   return (
     <main className="main">
       <Blob />
-      {!playGame && (
+      {playGame ? (
+        <Quiz difficulty={difficulty} category={category} play={play} />
+      ) : (
         <StartPage
           setCategory={setCategory}
           setDifficulty={setDifficulty}
           play={play}
         />
-      )}
-      {playGame && (
-        <Quiz difficulty={difficulty} category={category} play={play} />
       )}
     </main>
   );

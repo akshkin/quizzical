@@ -3,10 +3,7 @@ export default function StartPage(props) {
     <main>
       <div className="start-page">
         <h1 className="main-title">Quizzical</h1>
-        <p className="main-subtitle">Time to test you general knowledge!</p>
-        <button className="btn" onClick={props.play}>
-          Start quiz
-        </button>
+        <p className="main-subtitle">Time to test your knowledge!</p>
 
         <label htmlFor="category">Select category</label>
         <select
@@ -33,6 +30,9 @@ export default function StartPage(props) {
           <option value="medium">Medium</option>
           <option value="hard">Hard</option>
         </select>
+        <button className="btn" onClick={props.play}>
+          Start quiz
+        </button>
       </div>
     </main>
   );
