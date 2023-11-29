@@ -1,119 +1,119 @@
 import { useState, useEffect } from "react";
 import Question from "./Question";
+import { ReactComponent as Loader } from "../assets/loading.svg";
 import { nanoid } from "nanoid";
 
-//https://opentdb.com/api.php?amount=5&type=multiple
-
-export default function QuestionBox(props) {
+export default function QuestionBox({ play, difficulty, category }) {
+  const [isLoading, setIsLoading] = useState(false);
   const [questionBoxes, setQuestionBoxes] = useState([]);
   const [checked, setChecked] = useState(false);
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    fetch(
-      `https://opentdb.com/api.php?amount=5&category=${props.category}&difficulty=${props.difficulty}&type=multiple&encode=url3986`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        const newQuestions = [];
+    async function fetchQuestions() {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `https://opentdb.com/api.php?amount=5&category=${category}&difficulty=${difficulty}&type=multiple&encode=url3986`
+        );
+        const data = await response.json();
+
         const results = data.results;
-        for (let i = 0; i < results.length; i++) {
-          let optionsArray = [
-            ...results[i].incorrect_answers,
-            results[i].correct_answer,
-          ].sort(() => (Math.random() > 0.5 ? 1 : -1));
-          optionsArray = optionsArray.map((answer) => ({
-            value: decodeURIComponent(answer),
+
+        // form answers array
+        const result = results.map((item) => {
+          const incorrectAnswers = item.incorrect_answers.map((answer) => ({
+            option: decodeURIComponent(answer),
+            isCorrect: false,
+            id: nanoid(),
             isChosen: false,
-            isCorrect: answer === optionsArray.correct_answer ? true : false,
-            isWrong: false,
-            id: nanoid(),
           }));
-          const questionBox = {
-            question: decodeURIComponent(results[i].question),
-            correct: decodeURIComponent(results[i].correct_answer),
-            options: optionsArray,
+          const answers = [
+            {
+              option: decodeURIComponent(item.correct_answer),
+              isCorrect: true,
+              id: nanoid(),
+              isChosen: false,
+            },
+            ...incorrectAnswers,
+          ].sort(() => (Math.random() > 0.5 ? 1 : -1));
+
+          // questionBox object with question and answers
+          return {
             id: nanoid(),
+            question: decodeURIComponent(item.question),
+            answers,
+            correctAnswer: item.correct_answer,
           };
-          newQuestions.push(questionBox);
-        }
-        setQuestionBoxes(newQuestions);
-      });
-  }, [props.category, props.difficulty]);
+        });
+        setQuestionBoxes(result);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchQuestions();
+  }, [category, difficulty]);
 
-  function selectOption(optId, questId) {
-    setQuestionBoxes((prevQuestionBox) => {
-      return prevQuestionBox.map((questionBox) => {
-        if (questionBox.id === questId) {
-          const answers = questionBox.options.map((option) => {
-            if (option.id === optId) {
-              return { ...option, isChosen: !option.isChosen };
-            }
-            return { ...option, isChosen: false };
-          });
-          return { ...questionBox, options: answers };
-        }
-
-        return questionBox;
-      });
-    });
-  }
-
+  // check answers
   function checkAnswers() {
-    const questionBoxCopy = [...questionBoxes];
-    questionBoxCopy.map((copy) => {
-      return copy.options.map((option) => {
-        if (option.isChosen && option.value === copy.correct) {
-          setScore((prevScore) => prevScore + 1);
-        }
-        if (option.value === copy.correct) {
-          return (option.isCorrect = true);
-        }
-        if (option.isChosen && option.value !== copy.correct) {
-          return (option.isWrong = true);
-        }
+    setQuestionBoxes((prevQuestionBoxes) => {
+      let newScore = 0;
 
-        return { copy };
+      const updatedQuestionBoxes = prevQuestionBoxes.map((item) => {
+        const updatedAnswers = item.answers.map((answer) => {
+          if (answer.isChosen && answer.isCorrect) {
+            newScore += 1;
+          }
+
+          return answer;
+        });
+
+        return {
+          ...item,
+          answers: updatedAnswers,
+        };
       });
-    });
-    setQuestionBoxes(questionBoxCopy);
-    setChecked(true);
-  }
 
-  const questionElements = questionBoxes.map((questionBox) => {
-    const { id, correct, question, options } = questionBox;
-    return (
-      <Question
-        key={id}
-        id={id}
-        correct={correct}
-        question={question}
-        options={options}
-        selectOption={selectOption}
-        checked={checked}
-      />
-    );
-  });
+      setScore(newScore);
+      setChecked(true);
+
+      return updatedQuestionBoxes;
+    });
+  }
 
   return (
-    <main>
-      <div className="quiz-page">{questionElements}</div>
-      <div>
-        <button className="btn" onClick={checkAnswers}>
-          Check answers
-        </button>
-
-        {checked && (
-          <div className="play-again">
-            <p className="result">
-              You scored {score}/{questionBoxes.length} correct answers
-            </p>
-            <button className="btn" onClick={props.play}>
-              Play again
-            </button>
-          </div>
-        )}
-      </div>
+    <main className="quiz-page">
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          {questionBoxes.length &&
+            questionBoxes.map((item) => (
+              <Question
+                key={item.id}
+                question={item.question}
+                options={item.answers}
+                setQuestionBoxes={setQuestionBoxes}
+                checked={checked}
+              />
+            ))}
+          <button disabled={checked} className="btn" onClick={checkAnswers}>
+            Check answers
+          </button>
+          {checked && (
+            <div className="play-again">
+              <p className="result">
+                You scored {score}/{questionBoxes.length} correct answers
+              </p>
+              <button className="btn" onClick={play}>
+                Play again
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </main>
   );
 }

@@ -1,24 +1,45 @@
 import Option from "./Option";
-import { nanoid } from "nanoid";
 
-export default function Question(props) {
-  const { id, checked, selectOption } = props;
-  const optionsElements = props.options.map((option) => {
-    return (
-      <Option
-        key={nanoid()}
-        questId={id}
-        checked={checked}
-        selectOption={selectOption}
-        option={option}
-      />
+export default function Question({
+  question,
+  options,
+  setQuestionBoxes,
+  checked,
+}) {
+  // set isChosen property if selected by user
+  function setChosen(optionId) {
+    setQuestionBoxes((prevQuestions) =>
+      prevQuestions.map((item) => {
+        return item.question === question
+          ? {
+              ...item,
+              answers: item.answers.map((answer) => {
+                return answer.id === optionId
+                  ? { ...answer, isChosen: true }
+                  : { ...answer, isChosen: false };
+              }),
+            }
+          : item;
+      })
     );
-  });
+  }
 
   return (
     <div className="question-box">
-      <h3 className="question">{props.question}</h3>
-      <div className="answers">{optionsElements}</div>
+      <h3 className="question">{question}</h3>
+      <div className="answers">
+        {options.map((option) => {
+          return (
+            <Option
+              key={option.id}
+              setChosen={setChosen}
+              id={option.id}
+              checked={checked}
+              option={option}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
