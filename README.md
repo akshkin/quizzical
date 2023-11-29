@@ -44,6 +44,6 @@ This is a solution to Scrimba's solo project - quizzical using The Open Trivia D
 
 ### Continued development
 
-To add a function to select category/difficulty
+Added functionality to select category/difficulty
 
 
